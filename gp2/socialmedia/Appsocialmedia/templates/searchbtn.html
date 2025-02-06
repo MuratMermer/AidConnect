@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contend %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-sm-12">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h3 class="mb-0">Bulunan Kullanıcılar</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if profils %}
+                            <div class="list-group">
+                                {% for profil in profils %}
+                                <a href="{% url 'profil' profil %}" 
+                                   class="list-group-item list-group-item-action d-flex align-items-center shadow-sm rounded mb-2">
+                                    <div class="d-flex align-items-center">
+
+                                        <strong class="text-dark">{{ profil }}</strong>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-center text-muted">Kullanıcı bulunamadı.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contend %}

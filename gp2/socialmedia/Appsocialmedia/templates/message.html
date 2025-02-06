@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contend %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Sidebar -->
+            <div class="card">
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item active">Mesajlaşma</li>
+                    <li class="list-group-item">Kullanıcılar</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="chat-box card">
+                <div class="card-body">
+                    <div class="messages" id="messageContainer" style="max-height: 400px; overflow-y: scroll;">
+                        <!-- Mesajları görüntüle -->
+                        {% for message in messages %}
+                            <div class="message d-flex justify-content-between mb-3">
+                                <div>
+                                  
+                                    <strong>  <a href="/profil/{{ message.sender.user.username }}" class="text-decoration-none text-dark">
+                                        
+                                    {{ message.sender.user.username }}:</a></strong> {{ message.content }}
+                                </div>
+                                <div class="ml-3">
+                                    <small>({{ message.created_at|date:"d-m-Y H:i" }})</small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p>Henüz mesaj yok.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form id="messageForm">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" id="messageInput" name="content" class="form-control" placeholder="Mesajınızı yazın...">
+                            <button type="submit" class="btn btn-primary">Gönder</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contend %}
+
+{% block extrajs %}
+<script>
+    const messageContainer = document.getElementById("messageContainer");
+    const messageForm = document.getElementById("messageForm");
+
+    // Sayfa yüklendiğinde mesajları göster
+    window.onload = function() {
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    };
+
+    // Form gönderildiğinde sayfa yenilenmesini engelle ve mesajı dinamik ekle
+    messageForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value.trim();
+
+        if (message) {
+            fetch('{% url "message" receiver.id %}', {
+                method: 'POST',
+                body: new FormData(messageForm),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Yeni mesaj ekleniyor
+                const messageElement = document.createElement("div");
+                messageElement.classList.add("message", "d-flex", "justify-content-between", "mb-3");
+                messageElement.innerHTML = `<div><strong>${data.sender}:</strong> ${data.content}</div>
+                                            <div class="ml-3"><small>(${data.created_at})</small></div>`;
+                messageContainer.appendChild(messageElement);
+
+                // Mesaj alanını temizle
+                messageInput.value = "";
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            });
+        }
+    });
+</script>
+{% endblock extrajs %}

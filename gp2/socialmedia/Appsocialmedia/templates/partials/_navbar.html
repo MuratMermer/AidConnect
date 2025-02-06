@@ -1,0 +1,79 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-2" href="{% url 'index' %}">
+      <span class="text-success">Aid</span><span class="text-warning">Connect</span>
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'index' %}">AnaSayfa</a>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#exampleModal" style="padding-top:8px;">
+            Yardım Ürünü Oluştur
+          </button>
+        </li>
+      </ul>
+      <form class="d-flex position-relative" role="search" action="{% url 'search' %}">
+        <input id="search" class="form-control me-2" type="search" placeholder="Kullanıcı ara" aria-label="Search" name="query">
+        <div id="search-results" style="position: absolute; top: 35px; left: 0; width: 100%; z-index: 999; display: none; background-color: white; border: 1px solid #ddd; border-radius: 5px;">
+          <!-- Arama sonuçları burada görünecek -->
+        </div>
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+
+      {% if request.user.is_authenticated %}
+      <div class="dropdown ms-2">
+        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{ request.user.username }}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="left:-25px;">
+          <a class="dropdown-item" href="{% url 'profil' request.user.username %}">Profil</a>
+          <a class="dropdown-item" href="{% url 'logout' %}">Çıkış Yap</a>
+        </div>
+        
+      </div>
+
+      
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-success ms-2">Giriş Yap</a>
+      <a href="{% url 'register' %}" class="btn btn-primary ms-2">Kayıt Ol</a>
+      {% endif %}
+    </div>
+  </div>
+  
+</nav>
+
+<!-- Button trigger modal -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="modal-body">
+        <img id="image" src="" alt="" style="width:416px; height:auto" class="mb-3" accept=".jpg, .jpeg, .png">
+        <div class="mb-4">
+          <input type="file" class="form-control form-control-lg" id="post-image" name="image" hidden required>
+          <label for="post-image"><i class="fa-regular fa-image"></i> Fotoğraf Yükle</label>
+        </div>
+        <div class="mb-4">
+          <textarea name="description" cols="50" rows="5" placeholder="Açıklama..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+        <button type="submit" class="btn btn-primary" name="postbtn" value="btnpost">Yardım Ürünü Paylaş</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
